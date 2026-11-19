@@ -10,12 +10,16 @@ def saludar(nombre):
     >>> saludar("  ada lovelace ")
     'Hola, Ada Lovelace. ¡Te damos la bienvenida al curso!'
     """
-    raise NotImplementedError("Completa la función saludar")
+    nombre = nombre.strip().title()
+    if not nombre:
+        nombre = "Anónimo"
+    return f"Hola, {nombre}. ¡Te damos la bienvenida al curso!"
 
 
 def main():
     """Pide el nombre por teclado e imprime el saludo."""
-    raise NotImplementedError("Completa la función main")
+    nombre = input("Ingresa tu nombre: ")
+    print(saludar(nombre))
 
 
 if __name__ == "__main__":
