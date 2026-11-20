@@ -10,7 +10,10 @@ def es_bisiesto(anio: int) -> bool:
     >>> es_bisiesto(2024), es_bisiesto(1900), es_bisiesto(2000)
     (True, False, True)
     """
-    raise NotImplementedError
+    if ((anio % 4 == 0) and (anio % 100 != 0 or anio % 400 == 0)):
+        return True
+    else:
+        return False
 
 
 def segundos_a_hms(segundos: int) -> str:
@@ -19,8 +22,11 @@ def segundos_a_hms(segundos: int) -> str:
     >>> segundos_a_hms(3725)
     '01:02:05'
     """
-    raise NotImplementedError
-
+    h = segundos // 3600
+    m = (segundos % 3600) // 60
+    s = segundos % 60
+    return f"{h:02d}:{m:02d}:{s:02d}"
+    
 
 def nombre_o_anonimo(nombre: str | None) -> str:
     """Devuelve el nombre sin espacios sobrantes o "Anónimo" si no hay.
@@ -28,8 +34,14 @@ def nombre_o_anonimo(nombre: str | None) -> str:
     >>> nombre_o_anonimo("  Ada "), nombre_o_anonimo(""), nombre_o_anonimo(None)
     ('Ada', 'Anónimo', 'Anónimo')
     """
-    raise NotImplementedError
-
+    if nombre is None: 
+        return "Anónimo"
+    nombre_limpio = nombre.strip()
+    if nombre_limpio == "":
+        return "Anónimo"
+    else:
+        return nombre_limpio
+        
 
 def en_rango(valor: float, minimo: float, maximo: float) -> bool:
     """Indica si ``valor`` está entre ``minimo`` y ``maximo``, ambos incluidos.
@@ -37,7 +49,10 @@ def en_rango(valor: float, minimo: float, maximo: float) -> bool:
     >>> en_rango(5, 1, 10), en_rango(11, 1, 10)
     (True, False)
     """
-    raise NotImplementedError
+    if (valor >= minimo and valor <= maximo):
+        return True
+    else:
+        return False
 
 
 def es_par(numero: int) -> bool:
@@ -46,7 +61,10 @@ def es_par(numero: int) -> bool:
     >>> es_par(-4), es_par(7)
     (True, False)
     """
-    raise NotImplementedError
+    if (numero % 2 == 0):
+        return True
+    else:
+        return False
 
 
 def reparto(total: int, personas: int) -> tuple[int, int]:
@@ -57,4 +75,6 @@ def reparto(total: int, personas: int) -> tuple[int, int]:
     >>> reparto(17, 5)
     (3, 2)
     """
-    raise NotImplementedError
+    toca = int(total / personas)
+    sobra = total - (toca * personas)
+    return (toca, sobra)

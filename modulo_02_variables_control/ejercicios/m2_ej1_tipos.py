@@ -1,5 +1,8 @@
 """Módulo 2 - Ejercicio 1: tipos de datos y conversiones."""
 
+
+import math
+
 def nombre_del_tipo(valor) -> str:
     """Devuelve el nombre del tipo de ``valor`` en español.
 
@@ -8,9 +11,22 @@ def nombre_del_tipo(valor) -> str:
     >>> nombre_del_tipo(3.5)
     'decimal'
     """
-    raise NotImplementedError
-
-
+    valor_esp = "otro"
+    valor_eng = type(valor).__name__
+    match valor_eng:
+        case "int":
+            valor_esp = "entero"
+        case "float":
+            valor_esp = "decimal"
+        case "bool":
+            valor_esp = "booleano"
+        case "str":
+            valor_esp = "texto"
+        case "NoneType":
+            valor_esp = "nulo"
+    return valor_esp
+        
+        
 def a_entero(texto: str) -> int | None:
     """Convierte ``texto`` a entero. Devuelve None si no es un entero válido.
 
@@ -21,7 +37,11 @@ def a_entero(texto: str) -> int | None:
     >>> a_entero("3.5") is None
     True
     """
-    raise NotImplementedError
+    try:
+        return int(texto)
+    except:
+        return None
+
 
 
 def casi_iguales(a: float, b: float, tolerancia: float = 1e-9) -> bool:
@@ -30,7 +50,7 @@ def casi_iguales(a: float, b: float, tolerancia: float = 1e-9) -> bool:
     >>> casi_iguales(0.1 + 0.2, 0.3)
     True
     """
-    raise NotImplementedError
+    return math.isclose(a, b, rel_tol=0.0, abs_tol=tolerancia)
 
 
 def media(a: float, b: float, c: float) -> float:
@@ -39,7 +59,9 @@ def media(a: float, b: float, c: float) -> float:
     >>> media(5, 6, 8)
     6.33
     """
-    raise NotImplementedError
+    datos = [a, b, c]
+    media = sum(datos)/len(datos)
+    return(round(media, 2))
 
 
 def partir_euros(importe: float) -> tuple[int, int]:
@@ -48,5 +70,6 @@ def partir_euros(importe: float) -> tuple[int, int]:
     >>> partir_euros(12.34)
     (12, 34)
     """
-    raise NotImplementedError
+    entero, decimal = f"{importe:.2f}".split(".")
+    return int(entero), int(decimal)
 

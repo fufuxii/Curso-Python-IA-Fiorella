@@ -10,7 +10,16 @@ def calificacion(nota: float) -> str:
     >>> calificacion(7.5)
     'Notable'
     """
-    raise NotImplementedError
+    if nota < 5 and nota >= 0:
+        return "Suspenso"
+    elif nota >= 5 and nota < 7:
+        return "Aprobado"
+    elif nota >= 7 and nota < 9:
+        return "Notable"
+    elif nota >= 9 and nota <= 10:
+        return "Sobresaliente"
+    else:
+        return "Nota no válida"
 
 
 def precio_entrada(edad: int, es_festivo: bool = False) -> float:
@@ -22,7 +31,21 @@ def precio_entrada(edad: int, es_festivo: bool = False) -> float:
     >>> precio_entrada(30), precio_entrada(30, es_festivo=True), precio_entrada(2, True)
     (9, 11, 0)
     """
-    raise NotImplementedError
+    precio_final = 0
+
+    if edad < 4:
+        precio_final = 0
+    elif edad >= 4 and edad <= 12:
+        precio_final = 5
+    elif edad >= 13 and edad <= 64:
+        precio_final = 9
+    elif edad >= 65:
+        precio_final = 6
+
+    if es_festivo and precio_final > 0:
+        precio_final = precio_final + 2
+
+    return precio_final
 
 
 def describir_http(codigo: int) -> str:
@@ -35,7 +58,22 @@ def describir_http(codigo: int) -> str:
     >>> describir_http(302), describir_http(503)
     ('Redirección', 'Error del servidor')
     """
-    raise NotImplementedError
+    if codigo == 200:
+        return "Correcto"
+    elif codigo == 201:
+        return "Creado"
+    elif codigo == 301 or codigo == 302:
+        return "Redirección"
+    elif codigo == 400:
+        return "Petición incorrecta"
+    elif codigo == 401 or codigo == 403:
+        return "Sin autorización"
+    elif codigo == 404:
+        return "No encontrado"
+    elif 500 <= codigo <= 599:
+        return "Error del servidor"
+    else:
+        return "Desconocido"
 
 
 def mayor_de_tres(a: float, b: float, c: float) -> float:
@@ -44,7 +82,12 @@ def mayor_de_tres(a: float, b: float, c: float) -> float:
     >>> mayor_de_tres(3, 9, 5)
     9
     """
-    raise NotImplementedError
+    if a >= b and a >= c:
+        return a
+    elif b >= a and b >= c:
+        return b
+    else:
+        return c
 
 
 def tipo_triangulo(a: float, b: float, c: float) -> str:
@@ -57,4 +100,15 @@ def tipo_triangulo(a: float, b: float, c: float) -> str:
     >>> tipo_triangulo(3, 3, 3), tipo_triangulo(3, 4, 5), tipo_triangulo(1, 2, 3)
     ('equilátero', 'escaleno', 'no es un triángulo')
     """
-    raise NotImplementedError
+    if a <= 0 or b <= 0 or c <= 0:
+        return "no es un triángulo"
+    
+    if a + b <= c or a + c <= b or b + c <= a:
+        return "no es un triángulo"
+    
+    if a == b == c:
+        return "equilátero"
+    elif a == b or a == c or b == c:
+        return "isósceles"
+    else:
+        return "escaleno"
