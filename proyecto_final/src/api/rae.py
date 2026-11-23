@@ -1,40 +1,39 @@
-import requests
 import os
+import requests
 
 from dotenv import load_dotenv
-from functools import lru_cache
 
 load_dotenv()
 
 BASE_URL = "https://rae-api.com/api/words"
 API_KEY = os.getenv("RAE_API_KEY")
 
+_cache: dict[str, bool] = {}
 
-@lru_cache(maxsize=1000)
+
 def consultar_palabra(palabra):
+    palabra = palabra.lower()
 
-    url = f"{BASE_URL}/{palabra.lower()}"
-
-    headers = {
-        "X-API-Key": API_KEY
-    }
+    if palabra in _cache:
+        return _cache[palabra]
 
     try:
         respuesta = requests.get(
-            url,
-            headers=headers,
-            timeout=5
+            f"{BASE_URL}/{palabra}",
+            headers={"X-API-Key": API_KEY},
+            timeout=5,
         )
 
         if respuesta.status_code == 404:
+            _cache[palabra] = False
             return False
 
         respuesta.raise_for_status()
-
-        datos = respuesta.json()
-
-        return datos.get("ok", False)
+        existe = bool(respuesta.json().get("ok", False))
+        _cache[palabra] = existe  
+        
+        return existe
 
     except requests.RequestException as error:
         print(f"Error al consultar la RAE: {error}")
-        return False
+        return False 

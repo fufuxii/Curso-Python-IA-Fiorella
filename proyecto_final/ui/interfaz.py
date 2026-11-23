@@ -2,8 +2,8 @@ import streamlit as st
 
 from src.logic.generador import generar_tablero
 from src.logic.puntuacion import puntos_palabra
+from src.logic.validador import validar_palabra
 from src.logic.temporizador import Temporizador
-from src.api.rae import consultar_palabra
 
 
 def nueva_partida():
@@ -21,8 +21,9 @@ def nueva_partida():
     st.session_state.fase = "jugando"
 
 
+@st.fragment(run_every=1)
 def mostrar_tiempo():
-    """Actualiza el temporizador cada segundo."""
+    """Se refresca sola cada segundo (requiere Streamlit >= 1.37)."""
 
     if st.session_state.fase != "jugando":
         return
@@ -31,13 +32,13 @@ def mostrar_tiempo():
 
     if reloj.terminado:
         st.session_state.fase = "fin"
-        st.rerun()
+        st.rerun()  # recarga toda la app para mostrar la pantalla final
 
     st.metric("⏱ Tiempo restante", reloj.formateado())
 
 
 def mostrar_panal(tablero):
-    """Muestra las siete letras del panal."""
+    """Muestra las siete letras del panal: 2 - 3 (con la central en medio) - 2."""
 
     st.markdown(
         """
@@ -62,37 +63,29 @@ def mostrar_panal(tablero):
         unsafe_allow_html=True
     )
 
-    # Primera fila
-    columnas = st.columns(3)
+    externas = tablero.externas
 
-    for i, letra in enumerate(tablero.externas[:3]):
-        columnas[i].markdown(
-            f'<div class="letra">{letra.upper()}</div>',
+    def celda(columna, letra, clase="letra"):
+        columna.markdown(
+            f'<div class="{clase}">{letra.upper()}</div>',
             unsafe_allow_html=True
         )
 
-    # Segunda fila: dos exteriores y la central
-    columnas = st.columns(3)
+    # Fila 1: 2 letras (centradas)
+    c = st.columns([1, 1, 1, 1])
+    celda(c[1], externas[0])
+    celda(c[2], externas[1])
 
-    for i, letra in enumerate(tablero.externas[3:5]):
-        columnas[i].markdown(
-            f'<div class="letra">{letra.upper()}</div>',
-            unsafe_allow_html=True
-        )
+    # Fila 2: letra, CENTRAL, letra
+    c = st.columns(3)
+    celda(c[0], externas[2])
+    celda(c[1], tablero.central, "letra central")
+    celda(c[2], externas[3])
 
-    columnas[2].markdown(
-        f'<div class="letra central">{tablero.central.upper()}</div>',
-        unsafe_allow_html=True
-    )
-
-    # Tercera fila
-    columnas = st.columns(3)
-
-    for i, letra in enumerate(tablero.externas[5:6]):
-        columnas[i].markdown(
-            f'<div class="letra">{letra.upper()}</div>',
-            unsafe_allow_html=True
-        )
+    # Fila 3: 2 letras (centradas)
+    c = st.columns([1, 1, 1, 1])
+    celda(c[1], externas[4])
+    celda(c[2], externas[5])
 
 
 def pantalla_inicio():
@@ -109,6 +102,7 @@ def pantalla_inicio():
     - Todas las palabras deben contener la **letra central**.
     - Las palabras deben tener **3 letras como mínimo**.
     - Puedes repetir las letras.
+    - Las tildes se ignoran al formar palabras.
     - Cada letra de una palabra vale **1 punto**.
     - Tienes **60 segundos** para encontrar una palabra.
     - Cada 5 palabras encontradas se restan 10 segundos
@@ -151,20 +145,23 @@ def pantalla_juego():
 
     if enviar:
 
+        palabra = palabra.strip().lower()
+
         if st.session_state.reloj.terminado:
             st.session_state.fase = "fin"
             st.rerun()
 
-        elif palabra.strip().lower() in st.session_state.palabras:
+        elif not palabra:
+            st.session_state.mensaje = "⚠️ Escribe una palabra."
+
+        elif palabra in st.session_state.palabras:
             st.session_state.mensaje = "⚠️ Ya has encontrado esa palabra."
 
-        elif consultar_palabra(
+        elif validar_palabra(
             palabra,
             tablero.letras,
             tablero.central
         ):
-
-            palabra = palabra.strip().lower()
 
             st.session_state.palabras.append(palabra)
 

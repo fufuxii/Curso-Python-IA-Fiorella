@@ -1,22 +1,22 @@
-from proyecto_final.src.api.rae import consultar_palabra
+from src.api.rae import consultar_palabra
+from src.logic.texto import quitar_tildes
 
 
 def validar_palabra(palabra, letras, letra_central):
-
     palabra = palabra.strip().lower()
-    letras = {letra.lower() for letra in letras}
-    letra_central = letra_central.lower()
-
-    if not palabra:
-        return False
 
     if len(palabra) < 3:
         return False
 
-    if letra_central not in palabra:
+    letras = {quitar_tildes(l.lower()) for l in letras}
+    letra_central = quitar_tildes(letra_central.lower())
+    base = quitar_tildes(palabra)
+
+    if letra_central not in base:
         return False
 
-    if not all(letra in letras for letra in palabra):
+    if not all(l in letras for l in base):
         return False
 
+    # Se consulta con la palabra original
     return consultar_palabra(palabra)

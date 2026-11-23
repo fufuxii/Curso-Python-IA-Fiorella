@@ -1,8 +1,9 @@
 import json
 import random
 
-from dataclasses import dataclass
 from pathlib import Path
+from dataclasses import dataclass
+from src.logic.texto import quitar_tildes
 
 
 @dataclass
@@ -21,11 +22,9 @@ def cargar_palabras_base():
     with open(ruta, "r", encoding="utf-8") as archivo:
         datos = json.load(archivo)
 
-    return [
-        palabra.upper()
-        for palabra in datos["palabras_base"]
-        if len(palabra) == 7 and len(set(palabra.upper())) == 7
-    ]
+    palabras = (quitar_tildes(p.upper()) for p in datos["palabras_base"])
+    
+    return [p for p in palabras if len(p) == 7 and len(set(p)) == 7]
 
 
 def generar_tablero(semilla=None) -> Tablero:
