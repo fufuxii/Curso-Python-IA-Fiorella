@@ -23,6 +23,7 @@ def es_fecha(texto: str) -> bool:
         date.fromisoformat(texto.strip())
     except ValueError:
         return False
+    
     return len(texto.strip()) == 10
 
 
@@ -38,7 +39,13 @@ def edad(fecha_nacimiento: str, hoy: date | None = None) -> int:
     >>> edad("2000-06-15", date(2026, 6, 15))
     26
     """
-    raise NotImplementedError
+    nacimiento = date.fromisoformat(fecha_nacimiento.strip())
+    hoy = date.today() if hoy is None else hoy
+    anios = hoy.year - nacimiento.year
+
+    if (hoy.month, hoy.day) < (nacimiento.month, nacimiento.day):
+        anios -= 1
+    return anios
 
 
 def es_mayor_de_edad(fecha_nacimiento: str, hoy: date | None = None) -> bool:
@@ -47,4 +54,7 @@ def es_mayor_de_edad(fecha_nacimiento: str, hoy: date | None = None) -> bool:
     >>> es_mayor_de_edad("2008-11-24", date(2026, 11, 23))
     False
     """
-    raise NotImplementedError
+    if edad(fecha_nacimiento, hoy) >= MAYORIA_DE_EDAD:
+        return True
+    else:
+        return False
