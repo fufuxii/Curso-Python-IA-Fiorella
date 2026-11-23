@@ -1,0 +1,17 @@
+{
+  "config": {
+    "letras_totales": 7,
+    "longitud_minima": 3,
+    "minimo_palabras_por_tablero": 10,
+    "tiempo_segundos": 180,
+    "puntos_pangrama": 7
+  },
+  "palabras": [
+    "calentar", "central",
+    "alta", "ante", "arca", "arena", "arte", "canta", "cantar", "cante", "cara", "carne",
+    "carta", "cena", "cera", "cerca", "ente", "entera", "era", "lana", "lata", "lente",
+    "nacer", "natal", "rana", "rara", "rata", "recta", "renta", "rental", "tala", "tanta",
+    "tarta", "tela", "calle", "tallar", "alertar", "lactar", "carecer", "clarear",
+    "casa", "perro", "canción", "caña", "árbol", "ala", "tren", "rec"
+  ]
+}
