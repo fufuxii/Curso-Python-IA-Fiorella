@@ -18,5 +18,4 @@ def validar_palabra(palabra, letras, letra_central):
     if not all(l in letras for l in base):
         return False
 
-    # Se consulta con la palabra original
     return consultar_palabra(palabra)
