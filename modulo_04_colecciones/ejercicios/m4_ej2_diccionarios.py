@@ -10,7 +10,7 @@ def punto_medio(a: tuple[float, float], b: tuple[float, float]) -> tuple[float, 
     >>> punto_medio((0, 0), (4, 2))
     (2.0, 1.0)
     """
-    raise NotImplementedError
+    return ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
 
 
 def contar_palabras(texto: str) -> dict[str, int]:
@@ -19,8 +19,11 @@ def contar_palabras(texto: str) -> dict[str, int]:
     >>> contar_palabras("El gato y el perro")
     {'el': 2, 'gato': 1, 'y': 1, 'perro': 1}
     """
-    raise NotImplementedError
-    # Con la librería estándar: dict(Counter(texto.lower().split()))
+    palabras = texto.lower().split()
+    conteo = {}
+    for palabra in palabras:
+        conteo[palabra] = conteo.get(palabra, 0) + 1
+    return conteo
 
 
 def invertir(diccionario: dict) -> dict:
@@ -29,7 +32,7 @@ def invertir(diccionario: dict) -> dict:
     >>> invertir({"a": 1, "b": 2})
     {1: 'a', 2: 'b'}
     """
-    raise NotImplementedError
+    return {v: k for k, v in diccionario.items()}
 
 
 def notas_medias(estudiantes: dict[str, list[float]]) -> dict[str, float]:
@@ -41,7 +44,13 @@ def notas_medias(estudiantes: dict[str, list[float]]) -> dict[str, float]:
     >>> notas_medias({"Ada": [9, 10], "Linus": [5, 6, 8]})
     {'Ada': 9.5, 'Linus': 6.33}
     """
-    raise NotImplementedError
+    medias = {}
+    for nombre, notas in estudiantes.items():
+        if notas:
+            medias[nombre] = round(sum(notas) / len(notas), 2)
+        else:
+            medias[nombre] = 0.0
+    return medias
 
 
 def mejor_estudiante(estudiantes: dict[str, list[float]]) -> str | None:
@@ -53,7 +62,11 @@ def mejor_estudiante(estudiantes: dict[str, list[float]]) -> str | None:
     >>> mejor_estudiante({"Ada": [9, 10], "Linus": [5, 6, 8]})
     'Ada'
     """
-    raise NotImplementedError
+    if not estudiantes:
+        return None
+
+    medias = notas_medias(estudiantes)
+    return max(medias, key=lambda nombre: medias[nombre])
 
 
 def total_carrito(carrito: list[tuple[str, int, float]]) -> float:
@@ -64,7 +77,8 @@ def total_carrito(carrito: list[tuple[str, int, float]]) -> float:
     >>> total_carrito([("teclado", 2, 45.0), ("raton", 1, 19.9)])
     109.9
     """
-    raise NotImplementedError
+    total = sum(unidades * precio for _, unidades, precio in carrito)
+    return round(total, 2)
 
 
 def fusionar_inventarios(a: dict[str, int], b: dict[str, int]) -> dict[str, int]:
@@ -75,7 +89,10 @@ def fusionar_inventarios(a: dict[str, int], b: dict[str, int]) -> dict[str, int]
     >>> fusionar_inventarios({"teclado": 5, "raton": 2}, {"raton": 3, "monitor": 1})
     {'teclado': 5, 'raton': 5, 'monitor': 1}
     """
-    raise NotImplementedError
+    fusion = a.copy()
+    for producto, unidades in b.items():
+        fusion[producto] = fusion.get(producto, 0) + unidades
+    return fusion
 
 
 def valor_anidado(datos: dict, ruta: str, por_defecto=None):
@@ -91,4 +108,9 @@ def valor_anidado(datos: dict, ruta: str, por_defecto=None):
     >>> valor_anidado(pedido, "cliente.telefono", "sin datos")
     'sin datos'
     """
-    raise NotImplementedError
+    claves = ruta.split(".")
+    for clave in claves:
+        if not isinstance(datos, dict):
+            return por_defecto
+        datos = datos.get(clave, por_defecto)
+    return datos
