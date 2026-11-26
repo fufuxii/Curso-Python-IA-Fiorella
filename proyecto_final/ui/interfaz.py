@@ -143,27 +143,6 @@ def mostrar_palabras(palabras):
         st.caption("Todavía no has encontrado ninguna palabra.")
 
 
-def barra_lateral():
-    with st.sidebar:
-        st.markdown(
-            '<div class="titulo">🐝 Panal de palabras</div>',
-            unsafe_allow_html=True
-        )
-
-        st.markdown("#### 📖 Reglas")
-        mostrar_reglas()
-
-        st.divider()
-
-        st.button(
-            "🏁 Ver resultados",
-            on_click=terminar_partida,
-            key="btn_resultados"
-        )
-
-        st.button("🚪 Salir", on_click=salir, key="btn_salir")
-
-
 def vista_previa():
 
     hexagonos = "".join(
@@ -233,11 +212,6 @@ def pantalla_inicio():
 def pantalla_juego():
 
     tablero = st.session_state.tablero
-
-    if "reglas_abiertas" not in st.session_state:
-        st.session_state.reglas_abiertas = False
-
-    barra_lateral()
 
     if st.session_state.mensaje:
         tipo, texto = st.session_state.mensaje
@@ -372,8 +346,7 @@ def main():
     st.set_page_config(
         page_title="Panal de palabras",
         page_icon="🐝",
-        layout="wide",
-        initial_sidebar_state="expanded"
+        layout="wide"
     )
 
     aplicar_estilos()
