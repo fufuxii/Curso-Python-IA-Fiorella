@@ -1,13 +1,3 @@
-RANGOS = [
-    (0, "Principiante"),
-    (10, "Aprendiz"),
-    (25, "Buen ritmo"),
-    (40, "Sólido"),
-    (60, "Experto"),
-    (80, "Genio"),
-    (100, "¡Todas las palabras!"),
-]
-
 
 def puntos_palabra(palabra: str) -> int:
     """

@@ -116,11 +116,10 @@ def mostrar_panal(tablero):
 
 def mostrar_reglas():
     st.markdown("""
-    - El panal tiene **7 letras**.
+    - El panal tiene un total de **7 letras**.
     - Todas las palabras deben contener la **letra central**.
     - Las palabras deben tener **3 letras como mínimo**.
     - Puedes repetir las letras.
-    - Las tildes se ignoran al formar palabras.
     - Cada letra de una palabra vale **1 punto**.
     - Tienes **60 segundos** para encontrar una palabra.
     - Cada 5 palabras encontradas, el tiempo disponible
@@ -147,7 +146,7 @@ def mostrar_palabras(palabras):
 def barra_lateral():
     with st.sidebar:
         st.markdown(
-            '<div class="titulo">🐝 Palabreto</div>',
+            '<div class="titulo">🐝 Panal de palabras</div>',
             unsafe_allow_html=True
         )
 
@@ -201,7 +200,7 @@ def vista_previa():
 def pantalla_inicio():
 
     st.markdown(
-        '<div class="titulo compacto">🐝 Palabreto</div>',
+        '<div class="titulo compacto">🐝 Panal de palabras</div>',
         unsafe_allow_html=True
     )
 
@@ -220,7 +219,7 @@ def pantalla_inicio():
                 )
 
                 st.button(
-                    "▶ Empezar partida",
+                    "Empezar partida",
                     on_click=nueva_partida,
                     type="primary",
                     key="btn_empezar"
@@ -247,7 +246,7 @@ def pantalla_juego():
         st.session_state.mensaje = None
 
     st.markdown(
-        '<div class="titulo compacto">🐝 Panel de palabras</div>',
+        '<div class="titulo compacto">🐝 Panal de palabras</div>',
         unsafe_allow_html=True
     )
 
@@ -283,7 +282,7 @@ def pantalla_juego():
                     st.text_input(
                         "Tu palabra",
                         key="entrada",
-                        placeholder="Mín. 3 letras + letra central",
+                        placeholder="Mínimo 3 letras",
                         label_visibility="collapsed"
                     )
 
@@ -371,7 +370,7 @@ def pantalla_fin():
 
 def main():
     st.set_page_config(
-        page_title="Palabreto",
+        page_title="Panal de palabras",
         page_icon="🐝",
         layout="wide",
         initial_sidebar_state="expanded"
