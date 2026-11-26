@@ -17,6 +17,9 @@ class Tablero:
 
 
 def cargar_palabras_base():
+    """
+    Carga del JSON las palabras de 7 letras distintas.
+    """
     ruta = Path(__file__).resolve().parents[2] / "data" / "palabras.json"
 
     with open(ruta, "r", encoding="utf-8") as archivo:
@@ -28,7 +31,9 @@ def cargar_palabras_base():
 
 
 def generar_tablero(semilla=None) -> Tablero:
-
+    """
+    Crea un tablero al azar, repetible con semilla.
+    """
     rng = random.Random(semilla)
 
     palabras = cargar_palabras_base()

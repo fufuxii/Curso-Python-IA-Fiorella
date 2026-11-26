@@ -3,6 +3,9 @@ from src.logic.texto import quitar_tildes
 
 
 def validar_palabra(palabra, letras, letra_central):
+    """
+    Comprueba longitud, letra central y letras permitidas, y después consulta a la RAE.
+    """
     palabra = palabra.strip().lower()
 
     if len(palabra) < 3:
