@@ -17,7 +17,11 @@ def grafico_barras(serie: pd.Series, titulo: str, etiqueta_y: str = "Importe (�
     El eje X muestra el índice de la serie. La figura lleva el título y la
     etiqueta del eje Y indicados.
     """
-    raise NotImplementedError
+    figura, eje = plt.subplots()
+    eje.bar(serie.index, serie.values)
+    eje.set_title(titulo)
+    eje.set_ylabel(etiqueta_y)
+    return figura
 
 
 def grafico_lineas(serie: pd.Series, titulo: str, etiqueta_y: str = "Importe (€)") -> Figure:
@@ -26,12 +30,20 @@ def grafico_lineas(serie: pd.Series, titulo: str, etiqueta_y: str = "Importe (�
     Pensado para la evolución mensual: el índice de la serie va en el eje X.
     La figura lleva título, etiqueta del eje Y y rejilla.
     """
-    raise NotImplementedError
+    figura, eje = plt.subplots()
+    eje.plot(serie.index, serie.values, marker="o")
+    eje.set_title(titulo)
+    eje.set_ylabel(etiqueta_y)
+    eje.grid(True)
+    return figura
 
 
 def histograma(valores, titulo: str, intervalos: int = 10) -> Figure:
     """Devuelve una figura con el histograma de los valores, con ``intervalos`` barras."""
-    raise NotImplementedError
+    figura, eje = plt.subplots()
+    eje.hist(valores, bins=intervalos)
+    eje.set_title(titulo)
+    return figura
 
 
 def panel(por_vendedor: pd.Series, mensual: pd.Series, titulo: str) -> Figure:
@@ -41,7 +53,14 @@ def panel(por_vendedor: pd.Series, mensual: pd.Series, titulo: str) -> Figure:
     "Por vendedor". A la derecha, líneas con la evolución mensual, con el
     título "Evolución mensual". ``titulo`` es el título general de la figura.
     """
-    raise NotImplementedError
+    figura, (izquierda, derecha) = plt.subplots(1, 2)
+    izquierda.bar(por_vendedor.index, por_vendedor.values)
+    izquierda.set_title("Por vendedor")
+    derecha.plot(mensual.index, mensual.values, marker="o")
+    derecha.set_title("Evolución mensual")
+    derecha.grid(True)
+    figura.suptitle(titulo)
+    return figura
 
 
 def guardar(figura: Figure, ruta: str | Path) -> Path:
@@ -49,4 +68,8 @@ def guardar(figura: Figure, ruta: str | Path) -> Path:
 
     Crea la carpeta de destino si no existe.
     """
-    raise NotImplementedError
+    ruta = Path(ruta)
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    figura.savefig(ruta, format="png", dpi=150)
+    plt.close(figura)
+    return ruta

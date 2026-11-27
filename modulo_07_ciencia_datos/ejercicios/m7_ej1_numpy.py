@@ -13,7 +13,7 @@ def crear_rango(inicio: float, fin: float, paso: float) -> np.ndarray:
     >>> crear_rango(0, 1, 0.25)
     array([0.  , 0.25, 0.5 , 0.75])
     """
-    raise NotImplementedError
+    return np.arange(inicio, fin, paso)
 
 
 def estadisticas(valores) -> dict[str, float]:
@@ -26,7 +26,13 @@ def estadisticas(valores) -> dict[str, float]:
     >>> estadisticas([2, 4, 4, 4, 5, 5, 7, 9])
     {'media': 5.0, 'mediana': 4.5, 'desviacion': 2.0, 'minimo': 2.0, 'maximo': 9.0}
     """
-    raise NotImplementedError
+    return {
+        "media": float(np.mean(valores)),
+        "mediana": float(np.median(valores)),
+        "desviacion": float(np.std(valores)),
+        "minimo": float(np.min(valores)),
+        "maximo": float(np.max(valores)),
+    }
 
 
 def aplicar_iva(precios, tipo: float = 0.21) -> np.ndarray:
@@ -35,7 +41,7 @@ def aplicar_iva(precios, tipo: float = 0.21) -> np.ndarray:
     >>> aplicar_iva([100, 19.9])
     array([121.  ,  24.08])
     """
-    raise NotImplementedError
+    return np.round(np.asarray(precios) * (1 + tipo), 2)
 
 
 def normalizar(valores) -> np.ndarray:
@@ -46,7 +52,12 @@ def normalizar(valores) -> np.ndarray:
     >>> normalizar([10, 20, 30])
     array([0. , 0.5, 1. ])
     """
-    raise NotImplementedError
+    valores = np.asarray(valores)
+    minimo = np.min(valores)
+    maximo = np.max(valores)
+    if minimo == maximo:
+        return np.zeros_like(valores, dtype=float)
+    return (valores - minimo) / (maximo - minimo)
 
 
 def mayores_que_la_media(valores) -> np.ndarray:
@@ -55,7 +66,8 @@ def mayores_que_la_media(valores) -> np.ndarray:
     >>> mayores_que_la_media([1, 5, 2, 8])
     array([5, 8])
     """
-    raise NotImplementedError
+    valores = np.asarray(valores)
+    return valores[valores > np.mean(valores)]
 
 
 def reemplazar_negativos(valores, sustituto: float = 0) -> np.ndarray:
@@ -66,7 +78,7 @@ def reemplazar_negativos(valores, sustituto: float = 0) -> np.ndarray:
     >>> reemplazar_negativos([3, -1, 4, -5])
     array([3, 0, 4, 0])
     """
-    raise NotImplementedError
+    return np.where(np.asarray(valores) < 0, sustituto, valores)
 
 
 def totales(matriz) -> tuple[np.ndarray, np.ndarray]:
@@ -78,7 +90,8 @@ def totales(matriz) -> tuple[np.ndarray, np.ndarray]:
     >>> columnas
     array([5, 7, 9])
     """
-    raise NotImplementedError
+    matriz = np.asarray(matriz)
+    return np.sum(matriz, axis=1), np.sum(matriz, axis=0)
 
 
 def importes(unidades, precios) -> np.ndarray:
@@ -89,7 +102,11 @@ def importes(unidades, precios) -> np.ndarray:
     >>> importes([2, 10], [950.0, 19.9])
     array([1900.,  199.])
     """
-    raise NotImplementedError
+    unidades = np.asarray(unidades)
+    precios = np.asarray(precios)
+    if len(unidades) != len(precios):
+        raise ValueError("unidades y precios deben tener la misma longitud")
+    return unidades * precios
 
 
 def media_movil(valores, ventana: int) -> np.ndarray:
@@ -100,4 +117,4 @@ def media_movil(valores, ventana: int) -> np.ndarray:
     >>> media_movil([1, 2, 3, 4, 5], 3)
     array([2., 3., 4.])
     """
-    raise NotImplementedError
+    return np.convolve(valores, np.ones(ventana) / ventana, mode="valid")

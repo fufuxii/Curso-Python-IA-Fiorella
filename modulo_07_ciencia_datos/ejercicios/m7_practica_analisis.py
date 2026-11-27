@@ -20,7 +20,7 @@ COLUMNAS_TEXTO = ["vendedor", "region", "producto", "categoria"]
 
 def cargar(ruta: str | Path) -> pd.DataFrame:
     """Lee el CSV de ventas con todas las columnas como texto."""
-    raise NotImplementedError
+    return pd.read_csv(ruta, dtype=str)
 
 
 def preparar(df: pd.DataFrame) -> pd.DataFrame:
@@ -40,7 +40,24 @@ def preparar(df: pd.DataFrame) -> pd.DataFrame:
 
     No modifica el DataFrame recibido.
     """
-    raise NotImplementedError
+    resultado = df.copy()
+    for columna in COLUMNAS_TEXTO:
+        resultado[columna] = resultado[columna].str.strip().str.capitalize()
+    resultado = resultado.drop_duplicates()
+    resultado["fecha"] = pd.to_datetime(
+        resultado["fecha"], format="%Y-%m-%d", errors="coerce"
+    )
+    resultado["unidades"] = pd.to_numeric(resultado["unidades"], errors="coerce")
+    resultado["precio"] = pd.to_numeric(
+        resultado["precio"].str.replace(",", ".", regex=False), errors="coerce"
+    )
+    resultado["region"] = resultado["region"].fillna("Sin región")
+    resultado = resultado.dropna(subset=["fecha", "vendedor", "unidades", "precio"])
+    resultado = resultado[(resultado["unidades"] > 0) & (resultado["precio"] > 0)]
+    resultado["unidades"] = resultado["unidades"].astype(int)
+    resultado["importe"] = resultado["unidades"] * resultado["precio"]
+    resultado["mes"] = resultado["fecha"].dt.strftime("%Y-%m")
+    return resultado.sort_values("fecha", kind="stable").reset_index(drop=True)
 
 
 def indicadores(df: pd.DataFrame) -> dict:
@@ -55,7 +72,14 @@ def indicadores(df: pd.DataFrame) -> dict:
     - "mejor_mes": el mes "AAAA-MM" de mayor importe total.
     - "producto_mas_vendido": el de más unidades.
     """
-    raise NotImplementedError
+    return {
+        "ventas": int(len(df)),
+        "importe_total": float(round(df["importe"].sum(), 2)),
+        "ticket_medio": float(round(df["importe"].mean(), 2)),
+        "mejor_vendedor": df.groupby("vendedor")["importe"].sum().idxmax(),
+        "mejor_mes": df.groupby("mes")["importe"].sum().idxmax(),
+        "producto_mas_vendido": df.groupby("producto")["unidades"].sum().idxmax(),
+    }
 
 
 def ranking_vendedores(df: pd.DataFrame, objetivos: pd.DataFrame) -> pd.DataFrame:
@@ -68,7 +92,20 @@ def ranking_vendedores(df: pd.DataFrame, objetivos: pd.DataFrame) -> pd.DataFram
 
     ``objetivos`` tiene las columnas vendedor y objetivo.
     """
-    raise NotImplementedError
+    agrupado = df.groupby("vendedor").agg(
+        ventas=("importe", "size"),
+        importe=("importe", "sum"),
+    ).reset_index()
+    resultado = agrupado.merge(objetivos, on="vendedor", how="left")
+    resultado = resultado.sort_values("importe", ascending=False)
+    resultado["importe"] = resultado["importe"].round(2)
+    resultado["cumplimiento"] = (
+        resultado["importe"] / resultado["objetivo"] * 100
+    ).round(1)
+    resultado["cumplido"] = resultado["importe"] >= resultado["objetivo"]
+    return resultado[
+        ["vendedor", "ventas", "importe", "objetivo", "cumplimiento", "cumplido"]
+    ].reset_index(drop=True)
 
 
 def evolucion_mensual(df: pd.DataFrame) -> pd.DataFrame:
@@ -78,7 +115,10 @@ def evolucion_mensual(df: pd.DataFrame) -> pd.DataFrame:
     porcentaje respecto al mes anterior, con un decimal; en el primer mes es
     un valor ausente. El índice va de 0 en adelante.
     """
-    raise NotImplementedError
+    resultado = df.groupby("mes")["importe"].sum().sort_index().reset_index()
+    resultado["importe"] = resultado["importe"].round(2)
+    resultado["variacion"] = (resultado["importe"].pct_change() * 100).round(1)
+    return resultado
 
 
 def generar_graficos(df: pd.DataFrame, carpeta: str | Path) -> list[Path]:
@@ -90,7 +130,35 @@ def generar_graficos(df: pd.DataFrame, carpeta: str | Path) -> list[Path]:
     Crea la carpeta si no existe. Cada gráfico lleva título y etiqueta en el
     eje Y. Las figuras se cierran después de guardarlas.
     """
-    raise NotImplementedError
+    carpeta = Path(carpeta)
+    carpeta.mkdir(parents=True, exist_ok=True)
+
+    por_vendedor = df.groupby("vendedor")["importe"].sum().sort_values(ascending=False)
+    figura, eje = plt.subplots()
+    eje.bar(por_vendedor.index, por_vendedor.values)
+    eje.set_title("Importe por vendedor")
+    eje.set_xlabel("Vendedor")
+    eje.set_ylabel("Importe (€)")
+    eje.tick_params(axis="x", labelrotation=45)
+    figura.tight_layout()
+    ruta_vendedores = carpeta / "importe_por_vendedor.png"
+    figura.savefig(ruta_vendedores, format="png", dpi=150)
+    plt.close(figura)
+
+    mensual = df.groupby("mes")["importe"].sum().sort_index()
+    figura, eje = plt.subplots()
+    eje.plot(mensual.index, mensual.values, marker="o")
+    eje.set_title("Evolución mensual")
+    eje.set_xlabel("Mes")
+    eje.set_ylabel("Importe (€)")
+    eje.grid(True)
+    eje.tick_params(axis="x", labelrotation=45)
+    figura.tight_layout()
+    ruta_mensual = carpeta / "evolucion_mensual.png"
+    figura.savefig(ruta_mensual, format="png", dpi=150)
+    plt.close(figura)
+
+    return [ruta_vendedores, ruta_mensual]
 
 
 def exportar(tabla: pd.DataFrame, ruta: str | Path) -> None:
@@ -98,7 +166,9 @@ def exportar(tabla: pd.DataFrame, ruta: str | Path) -> None:
 
     Crea la carpeta de destino si no existe.
     """
-    raise NotImplementedError
+    ruta = Path(ruta)
+    ruta.parent.mkdir(parents=True, exist_ok=True)
+    tabla.to_csv(ruta, index=False, encoding="utf-8")
 
 
 def main() -> None:
